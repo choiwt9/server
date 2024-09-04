@@ -29,19 +29,28 @@
     </entry>
 <entry key="updateMember">
      UPDATE MEMBER
-       SET  USER_NAME = '?'
+       SET USER_NAME = ?
           , PHONE = ?
           ,EMAIL = ?
           ,ADDRESS = ?
           ,INTEREST = ?
-          ,MODIFY_DATE = SYSDATE AND STATUS = 'Y'
-     WHERE USER_ID = ?
+          ,MODIFY_DATE = SYSDATE
+     WHERE USER_ID = ? AND STATUS = 'Y'
 </entry>
  <entry key="selectMember">
       SELECT * 
       FROM MEMBER
       WHERE USER_ID = ? AND STATUS = 'Y' 
     </entry>
-
-
+<entry key="updatePassword">
+      UPDATE MEMBER
+      SET USER_PWD = ?
+      WHERE USER_ID = ? AND USER_PWD = ? AND STATUS = 'Y'
+    </entry>
+<entry key="deleteMember">
+      UPDATE MEMBER
+      SET STATUS = 'N'
+      WHERE USER_ID = ? 
+      AND USER_PWD = ? 
+    </entry>
 </properties>

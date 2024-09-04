@@ -52,8 +52,11 @@ public class MemberService {
 		// Connection 객체 생성
 		Connection conn = getConnection();
 		//Dao에게 Connection, master 객체 전달하면서 수정 요청
-		int result = new MemberDao().updateMember(conn, m);
 		//update(DML)-> 트랜잭션 처리
+		int result = new MemberDao().updateMember(conn, m);
+		
+		Member updateMem = null;
+		
 		if(result > 0) {
 			commit(conn);
 			
@@ -63,11 +66,50 @@ public class MemberService {
 			rollback(conn);
 		}
 		//connection 객체 반납(close)
-		
+		close(conn);
 		//Member 객체 반환
 		
 		//*수정 성공했다면 변경된 내용이 저장된 객체 반환
 		
 		//*실패했다면 null반환
+		return updateMem;
+	}
+
+	public Member updatePassword(String userId, String userPwd, String newPassword) {
+		Member m = null;
+		Connection conn = getConnection();
+		
+		//update(DML) -> int --> 트랜잭션 처리
+		int result = new MemberDao().updatePassword(conn, userId, userPwd, newPassword);
+		
+		if(result > 0) {
+			//비밀번호 변경 성공
+			commit(conn);
+			
+			//사용자 정보 조회 -> 아이디 기준으로 조회
+			m = new MemberDao().selectMember(conn, userId);
+		}else {
+			//비밀번호 변경 실패
+			rollback(conn);
+		}
+		close(conn);
+		return m;
+	}
+
+	public int deletePassword(String id, String pwd) {
+		int result = 0;
+		
+		Connection conn = getConnection();
+		
+		result = new MemberDao().deleteMember(conn, id, pwd);
+		
+		if(result > 0) {
+			commit(conn);
+		}else {
+			rollback(conn);
+		}
+			close(conn);
+		
+		return result;
 	}
 }

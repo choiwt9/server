@@ -8,6 +8,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import com.kh.member.model.service.MemberService;
 import com.kh.member.model.vo.Member;
@@ -50,14 +51,20 @@ public class updateMemberController extends HttpServlet {
 		
 		if(updateMem == null) {//정보수정 실패
 			//에러페이지로 응답
+			request.setAttribute("errorMsg", "정보 수정에 실페했습니다. 관리자에게 문의바랍니다");
 			
+			request.getRequestDispatcher("views/common/errorPage.jsp").forward(request, response);
+			
+		
 			
 		}else {//정보수정 성공
+			HttpSession session = request.getSession();
 			//세션영역에 변경된 사용자 정보 저장
-            
+            session.setAttribute("loginUser", updateMem);
 			//수정 성공 했다는 메시지를 알림창을 띄울 수 있도록 세션 영역에 저장
-			
+            session.setAttribute("alertMsg", "정보수정 성공했습니다.");
 			//마이페이지로 url 재요청 (/jsp/myPage.me)
+            response.sendRedirect(request.getContextPath() + "/myPage.me");
 		}
 	}
 

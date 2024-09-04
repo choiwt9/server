@@ -163,9 +163,82 @@ public class MemberDao {
 		return result;
 	}
 
-	public Object selectMember(Connection conn, String userId) {
+	public Member selectMember(Connection conn, String userId) {
           Member m = null;
+         
+          //사용자 아이디에 해당하는 정보를 추출하여 Member 객체에 담아 전달
+          PreparedStatement pstmt = null;
+          ResultSet rset = null;
+     
+          String sql = prop.getProperty("selectMember");
+          try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, userId);
+			rset = pstmt.executeQuery();
+			
+			if (rset.next()) {
+	          m = new Member( rset.getInt("user_no"),
+						      rset.getString("user_id"),
+						      rset.getString("user_pwd"),
+						      rset.getString("user_name"),
+						      rset.getString("phone"),
+						      rset.getString("email"),
+						      rset.getString("address"),
+						      rset.getString("interest"),
+						      rset.getDate("enroll_date"),
+						      rset.getDate("modify_date"),
+						      rset.getString("status"));
+			}      
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}finally {
+			close(rset);
+			close(pstmt);
+		}
+          
 		  return m;
+	}
+
+	public int updatePassword(Connection conn, String userId, String userPwd, String newPassword) {
+	int result = 0;
+	PreparedStatement pstmt = null;
+    String sql = prop.getProperty("updatePassword");
+	
+    try {
+		pstmt = conn.prepareStatement(sql);
+		pstmt.setString(1, newPassword);
+		pstmt.setString(2, userId);
+		pstmt.setString(3, userPwd);
+		
+		result = pstmt.executeUpdate();
+    
+    }catch (SQLException e) {
+		e.printStackTrace();
+	}finally {
+		close(pstmt);
+	} 
+    
+		return result;
+	}
+
+	public int deleteMember(Connection conn, String id, String pwd) {
+		int result = 0;
+		
+		PreparedStatement pstmt = null;
+		String sql = prop.getProperty("deleteMember");
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, id);
+			pstmt.setString(2, pwd);
+			
+			result = pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}finally {
+	          close(pstmt);		
+		}
+		
+		return result;
 	}
 
 }
